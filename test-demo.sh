@@ -13,7 +13,6 @@ if [ ! -f .env ]; then
     echo "Created .env from example."
 fi
 
-# 2. Start Docker
 echo -e "\n${GREEN}[2/5] Starting services with Docker Compose...${NC}"
 docker compose up --build -d
 
