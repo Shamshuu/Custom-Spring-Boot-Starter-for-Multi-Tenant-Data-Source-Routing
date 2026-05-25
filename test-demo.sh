@@ -23,7 +23,6 @@ while [ "$(docker inspect --format='{{json .State.Health.Status}}' demo_app)" !=
 done
 echo -e " ${GREEN}READY!${NC}"
 
-# 3. Health Checks
 echo -e "\n${GREEN}[3/5] Verifying Health Checks...${NC}"
 echo -e "${BLUE}Actuator Health Output:${NC}"
 curl -s http://localhost:8080/actuator/health | jq . || curl -s http://localhost:8080/actuator/health
