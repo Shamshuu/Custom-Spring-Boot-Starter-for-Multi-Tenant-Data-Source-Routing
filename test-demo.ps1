@@ -8,7 +8,6 @@ if (-not (Test-Path .env)) {
     Write-Host "Created .env from example."
 }
 
-# 2. Start Docker
 Write-Host "`n[2/5] Starting services with Docker Compose..." -ForegroundColor Green
 docker compose up --build -d
 
