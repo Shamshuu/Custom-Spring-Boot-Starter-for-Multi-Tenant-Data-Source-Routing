@@ -1,0 +1,54 @@
+1. What This Project Does & Its Purpose
+
+This project provides a Dynamic Data Source Routing mechanism for Spring Boot applications in a multi-tenant environment.
+
+In a traditional application, your backend talks to a single database. However, in a Software as a Service (SaaS) platform (like Shopify, Slack, or Salesforce), you have many different clients (tenants) using the same application. For security and performance reasons, SaaS applications often isolate each client's data into completely separate databases.
+
+The purpose of this project is to create a reusable "Spring Boot Starter" that automatically figures out which database to connect to on-the-fly, based solely on an HTTP header (X-Tenant-ID) provided by the client in their API request.
+
+
+2. How Each Functionality is Implemented
+
+A. Tenant Context Management (TenantContext.java)
+Problem: When a request comes in, the application needs to remember which tenant it belongs to throughout the entire lifecycle of that request (from Controller to Service to Repository). Implementation: We use a ThreadLocal variable. In Java web applications, each incoming HTTP request is typically handled by a single dedicated thread. ThreadLocal allows us to store the tenantId safely on that specific thread, ensuring that concurrent requests from different tenants don't accidentally overwrite each other's IDs.
+
+B. Intercepting HTTP Requests (TenantInterceptor.java)
+Problem: We need a way to extract the X-Tenant-ID before the application processes the business logic. Implementation: We implemented a Spring HandlerInterceptor. This interceptor acts like a tollbooth:
+
+It intercepts every incoming HTTP request.
+It looks for the X-Tenant-ID header.
+If missing or invalid, it immediately rejects the request with a 400 or 404 error.
+If valid, it saves the ID into the TenantContext (ThreadLocal).
+After the request finishes processing, it clears the TenantContext to prevent memory leaks.
+
+C. Dynamic Database Routing (TenantAwareRoutingDataSource.java)
+Problem: Spring Data JPA usually expects one static DataSource. How do we make it switch dynamically? Implementation: We extended Spring's AbstractRoutingDataSource. This class acts as a proxy for multiple actual data sources. Before any database query is executed, Spring calls the determineCurrentLookupKey() method on this class. Our implementation simply returns TenantContext.getCurrentTenant(), telling Spring exactly which physical database connection to use for that specific query.
+
+D. Auto-Configuration (MultiTenancyAutoConfiguration.java)
+Problem: We want this to be a plug-and-play library (a "starter") that developers can easily drop into any project without writing boilerplate code. Implementation: We created an Auto-Configuration class. When a developer includes our starter and adds multitenancy.enabled=true to their application.yml, Spring Boot automatically runs this class. It:
+
+Reads the database credentials for all tenants from the application.yml.
+Creates physical DataSource connections for each tenant.
+Wires them into our TenantAwareRoutingDataSource.
+Registers the TenantInterceptor into the Spring MVC pipeline.
+
+
+3. How Each Technology Helps
+
+Java & Spring Boot: 
+The foundation. Spring Boot’s auto-configuration ecosystem and dependency injection allow us to package this complex routing logic into a neat, reusable library.
+
+Spring Web (MVC): 
+Provides the HandlerInterceptor to easily intercept HTTP requests and read headers, and @RestController for building the demo API endpoints.
+
+Spring Data JPA & Hibernate:
+Provides the ORM (Object-Relational Mapping). By putting our custom AbstractRoutingDataSource underneath JPA, developers can write standard database queries (userRepository.save()) and remain completely oblivious to the fact that routing is happening under the hood.
+
+PostgreSQL: 
+A robust relational database. In our Docker setup, we initialize one Postgres instance but create three entirely separate logical databases inside it (tenant1_db, tenant2_db, tenant3_db) to prove true data isolation.
+
+Docker & Docker Compose: 
+Containerization ensures the application runs identically on any machine. Docker Compose allows us to spin up the Java backend and the PostgreSQL database (along with the initialization script that creates the 3 tenant databases) using a single command, eliminating complex manual local setup.
+
+Spring Boot Actuator: 
+Provides operational endpoints. We used it to create a custom /actuator/health/datasources endpoint, giving system administrators a single pane of glass to verify that the connections to all tenant databases are healthy.
