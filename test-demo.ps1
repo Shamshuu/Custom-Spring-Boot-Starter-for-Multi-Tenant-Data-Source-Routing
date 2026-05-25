@@ -37,7 +37,6 @@ Write-Host "`nCreating user for TENANT 2..." -ForegroundColor Blue
 $body2 = @{ name = "Bob Blue"; email = "bob@tenant2.com" } | ConvertTo-Json
 Invoke-RestMethod -Method Post -Uri "http://localhost:8080/api/users" -Headers @{ "X-Tenant-ID" = "tenant2"; "Content-Type" = "application/json" } -Body $body2 | ConvertTo-Json
 
-# 5. Isolation Verification
 Write-Host "`n[5/5] Verifying Data Isolation..." -ForegroundColor Green
 
 Write-Host "Listing users for TENANT 1 (Expected: Alice only):" -ForegroundColor Blue
