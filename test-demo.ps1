@@ -1,5 +1,3 @@
-# Multi-Tenant Data Source Routing - Demo Script (PowerShell)
-
 Write-Host "==================================================" -ForegroundColor Blue
 Write-Host "   MULTI-TENANT ROUTING PROJECT DEMO             " -ForegroundColor Blue
 Write-Host "==================================================" -ForegroundColor Blue
