@@ -20,7 +20,6 @@ while ($true) {
 }
 Write-Host " READY!" -ForegroundColor Green
 
-# 3. Health Checks
 Write-Host "`n[3/5] Verifying Health Checks..." -ForegroundColor Green
 Write-Host "Actuator Health Output:" -ForegroundColor Blue
 Invoke-RestMethod -Uri "http://localhost:8080/actuator/health" | ConvertTo-Json
