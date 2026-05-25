@@ -7,7 +7,6 @@ echo -e "${BLUE}==================================================${NC}"
 echo -e "${BLUE}   MULTI-TENANT ROUTING PROJECT DEMO             ${NC}"
 echo -e "${BLUE}==================================================${NC}"
 
-# 1. Setup
 echo -e "\n${GREEN}[1/5] Setting up environment...${NC}"
 if [ ! -f .env ]; then
     cp .env.example .env
