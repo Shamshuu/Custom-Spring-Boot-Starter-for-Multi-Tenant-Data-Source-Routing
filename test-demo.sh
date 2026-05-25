@@ -1,5 +1,4 @@
 
-# Multi-Tenant Data Source Routing - Demo Script
 # This script automates the testing for video proof.
 
 # Colors for output
