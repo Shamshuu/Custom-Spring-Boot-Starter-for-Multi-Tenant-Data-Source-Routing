@@ -2,7 +2,6 @@ Write-Host "==================================================" -ForegroundColor
 Write-Host "   MULTI-TENANT ROUTING PROJECT DEMO             " -ForegroundColor Blue
 Write-Host "==================================================" -ForegroundColor Blue
 
-# 1. Setup
 Write-Host "`n[1/5] Setting up environment..." -ForegroundColor Green
 if (-not (Test-Path .env)) {
     Copy-Item .env.example .env
