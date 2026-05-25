@@ -27,7 +27,6 @@ Invoke-RestMethod -Uri "http://localhost:8080/actuator/health" | ConvertTo-Json
 Write-Host "`nTenant DataSources Health:" -ForegroundColor Blue
 Invoke-RestMethod -Uri "http://localhost:8080/actuator/health/datasources" | ConvertTo-Json
 
-# 4. Multi-Tenant Operations
 Write-Host "`n[4/5] Performing Multi-Tenant Data Operations..." -ForegroundColor Green
 
 Write-Host "Creating user for TENANT 1..." -ForegroundColor Blue
