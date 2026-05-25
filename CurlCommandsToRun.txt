@@ -1,0 +1,95 @@
+# 1. Build the project
+
+mvn clean install -DskipTests
+
+
+# 2. Start the application and databases using Docker Compose
+
+docker-compose up --build -d
+
+# Wait for about 15-30 seconds for the database and application to become fully healthy...
+
+# ==========================================
+# TEST 1: Data Creation in Different Tenants
+# ==========================================
+
+# 3. Create a user for Tenant 1
+
+curl -s -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -H "X-Tenant-ID: tenant1" \
+  -d '{"name": "Alice Tenant1", "email": "alice@tenant1.com"}'
+
+
+# 4. Create a user for Tenant 2
+
+curl -s -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -H "X-Tenant-ID: tenant2" \
+  -d '{"name": "Bob Tenant2", "email": "bob@tenant2.com"}'
+
+
+# ==========================================
+# TEST 2: Verify Data Isolation (List Users)
+# ==========================================
+
+# 5. Get users for Tenant 1 (You should only see Alice)
+
+curl -s -X GET http://localhost:8080/api/users \
+  -H "X-Tenant-ID: tenant1"
+
+
+# 6. Get users for Tenant 2 (You should only see Bob)
+
+curl -s -X GET http://localhost:8080/api/users \
+  -H "X-Tenant-ID: tenant2"
+
+
+# ==========================================
+# TEST 3: Verify Data Isolation (Get By ID)
+# ==========================================
+
+# 7. Get a specific user by ID for Tenant 1 (Assuming Alice got ID 1)
+
+curl -s -X GET http://localhost:8080/api/users/1 \
+  -H "X-Tenant-ID: tenant1"
+
+
+# 8. Try to get Alice's ID (1) from Tenant 2 (This should return a 404 Not Found)
+# Using -v (verbose) to see the HTTP status code
+
+curl -v -X GET http://localhost:8080/api/users/1 \
+  -H "X-Tenant-ID: tenant2"
+
+
+# ==========================================
+# TEST 4: Error Handling
+# ==========================================
+
+# 9. Test Missing Tenant Header (Should return 400 Bad Request)
+
+curl -s -X GET http://localhost:8080/api/users
+
+
+# 10. Test Invalid/Unknown Tenant (Should return 404 Not Found)
+
+curl -s -X GET http://localhost:8080/api/users \
+  -H "X-Tenant-ID: unknown_tenant"
+
+
+# ==========================================
+# TEST 5: Health Check
+# ==========================================
+
+# 11. Test the custom health indicator (Should show "status": "UP" for tenant1, tenant2, and tenant3)
+
+curl -s -X GET http://localhost:8080/actuator/health/datasources
+
+
+# ==========================================
+# TEARDOWN
+# ==========================================
+
+# 12. Stop and remove the containers when done
+
+docker-compose down
