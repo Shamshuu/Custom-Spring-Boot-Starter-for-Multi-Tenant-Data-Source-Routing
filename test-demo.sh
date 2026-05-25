@@ -1,5 +1,4 @@
 
-# This script automates the testing for video proof.
 
 # Colors for output
 GREEN='\033[0;32m'
