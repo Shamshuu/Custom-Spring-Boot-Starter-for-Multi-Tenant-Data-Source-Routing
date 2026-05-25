@@ -29,7 +29,6 @@ curl -s http://localhost:8080/actuator/health | jq . || curl -s http://localhost
 echo -e "\n${BLUE}Tenant DataSources Health:${NC}"
 curl -s http://localhost:8080/actuator/health/datasources | jq . || curl -s http://localhost:8080/actuator/health/datasources
 
-# 4. Multi-Tenant Operations
 echo -e "\n${GREEN}[4/5] Performing Multi-Tenant Data Operations...${NC}"
 
 echo -e "${BLUE}Creating user for TENANT 1...${NC}"
