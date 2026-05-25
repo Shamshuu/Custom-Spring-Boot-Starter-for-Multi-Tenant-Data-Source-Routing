@@ -43,7 +43,6 @@ curl -s -X POST http://localhost:8080/api/users \
   -H "X-Tenant-ID: tenant2" \
   -d '{"name": "Bob Blue", "email": "bob@tenant2.com"}' | jq .
 
-# 5. Isolation Verification
 echo -e "\n${GREEN}[5/5] Verifying Data Isolation...${NC}"
 
 echo -e "${BLUE}Listing users for TENANT 1 (Expected: Alice only):${NC}"
